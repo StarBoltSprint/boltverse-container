@@ -410,7 +410,7 @@ a {
    ═══════════════════════════════════════════ */
 
 .home-hero-layout {
-  max-width: 560px;
+  max-width: 640px;
   margin: 0 auto;
   padding-bottom: 1rem;
   width: 100%;
@@ -544,15 +544,16 @@ a {
   position: relative;
   display: grid;
   place-items: center;
-  /* Give the heart real room — this was too short before */
-  min-height: min(52vh, 480px);
-  margin: 0.15rem 0 1.5rem;
+  /* Tall stage so a large heart has room */
+  min-height: clamp(340px, 58vh, 620px);
+  width: 100%;
+  margin: 0.1rem 0 1.1rem;
   overflow: visible;
 }
 
 .hero-core-stars {
   position: absolute;
-  inset: -25% -15%;
+  inset: -30% -20%;
   pointer-events: none;
   background-image:
     radial-gradient(1.5px 1.5px at 10% 20%, rgba(255, 255, 255, 0.7), transparent),
@@ -564,26 +565,29 @@ a {
   opacity: 0.9;
 }
 
-/* Big hero heart — dominate the screen like the mock */
+/*
+ * Heart asset has lots of black padding around the gem.
+ * Box is large AND we scale the image so the gem itself fills the hero.
+ */
 .star-core-visual--hero {
-  width: min(420px, 92vw);
-  height: min(420px, 92vw);
-  max-height: min(52vh, 480px);
+  width: min(92vw, 560px);
+  height: min(92vw, 560px);
+  max-width: 100%;
   position: relative;
   z-index: 1;
   display: grid;
   place-items: center;
+  overflow: visible;
 }
 
 @media (min-width: 900px) {
   .star-core-visual--hero {
-    width: min(460px, 48vw);
-    height: min(460px, 48vw);
-    max-height: 520px;
+    width: min(640px, 55vw);
+    height: min(640px, 55vw);
   }
 
   .hero-core-stage {
-    min-height: min(56vh, 520px);
+    min-height: clamp(420px, 62vh, 680px);
   }
 }
 
@@ -599,35 +603,45 @@ a {
 
 .star-core-bloom {
   position: absolute;
-  inset: 0%;
+  inset: -5%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(46, 230, 255, 0.45), transparent 62%);
-  filter: blur(28px);
+  background: radial-gradient(circle, rgba(46, 230, 255, 0.5), transparent 60%);
+  filter: blur(36px);
   animation: pulse-core 3.2s ease-in-out infinite;
   pointer-events: none;
 }
 
 .star-core-heart-img {
-  width: 100%;
-  height: 100%;
+  /* Zoom past PNG padding so the crystal heart is the focus */
+  width: 155%;
+  height: 155%;
+  max-width: none;
   object-fit: contain;
+  object-position: center center;
   position: relative;
   z-index: 1;
   filter:
-    drop-shadow(0 0 32px rgba(46, 230, 255, 0.65))
-    drop-shadow(0 0 64px rgba(46, 230, 255, 0.35));
+    drop-shadow(0 0 40px rgba(46, 230, 255, 0.75))
+    drop-shadow(0 0 80px rgba(46, 230, 255, 0.4));
   animation: heart-float 4.5s ease-in-out infinite;
   user-select: none;
   -webkit-user-drag: none;
 }
 
+.star-core-visual--hero .star-core-heart-img {
+  /* Slightly taller presence */
+  width: 160%;
+  height: 175%;
+  transform-origin: center center;
+}
+
 @keyframes heart-float {
   0%,
   100% {
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
   50% {
-    transform: translateY(-8px) scale(1.02);
+    transform: translateY(-10px);
   }
 }
 
@@ -764,10 +778,10 @@ a {
   font-size: 0.68rem;
 }
 
-/* Desktop: center hero column in main area */
+/* Desktop: center hero column — allow heart to dominate */
 @media (min-width: 900px) {
   .home-hero-layout {
-    max-width: 520px;
+    max-width: 680px;
   }
 
   .main:has(.home-hero-layout) {
