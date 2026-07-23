@@ -5,25 +5,54 @@ import { STAR_CORE_CHARGE } from "../data/mock";
 import { usePlatform } from "../platform/PlatformContext";
 import { PLATFORMS } from "../platform/types";
 
+/** Grok-style spiral mark (matches Grok Games mock: orbit glyph + wordmark) */
 function GrokGamesMark() {
   return (
-    <svg className="grok-games-mark" viewBox="0 0 40 40" aria-hidden>
+    <svg className="grok-games-mark" viewBox="0 0 48 48" aria-hidden>
       <defs>
-        <linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#5ef0ff" />
-          <stop offset="100%" stopColor="#0891b2" />
+        <linearGradient id="grokMarkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="55%" stopColor="#b8f7ff" />
+          <stop offset="100%" stopColor="#5ef0ff" />
         </linearGradient>
       </defs>
-      <path
-        fill="url(#gg)"
-        d="M20 4 L34 12 L34 28 L20 36 L6 28 L6 12 Z M20 10 L28 14.5 L28 25.5 L20 30 L12 25.5 L12 14.5 Z"
+      {/* Outer orbit ring */}
+      <circle
+        cx="24"
+        cy="24"
+        r="18.5"
+        fill="none"
+        stroke="url(#grokMarkGrad)"
+        strokeWidth="2.4"
         opacity="0.95"
       />
+      {/* Spiral arm (Grok-like continuous curve) */}
       <path
-        fill="#031018"
-        d="M20 14 L25 17 V24 L20 27 L15 24 V17 Z"
-        opacity="0.85"
+        d="M24 8.5
+           C33.5 8.5 39.5 15.2 39.5 24
+           C39.5 31.8 34.2 37.5 27 38.2
+           C22.5 38.6 18.8 36.2 17.2 32.5
+           C15.8 29.2 17.2 25.5 20.5 24.2
+           C23.2 23.2 25.8 24.5 26.8 27
+           C27.5 28.8 26.8 30.8 25 31.5
+           C23.5 32.1 21.8 31.4 21.2 30"
+        fill="none"
+        stroke="url(#grokMarkGrad)"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
+      {/* Inner accent arc */}
+      <path
+        d="M24 14.5 C30 14.5 34 18.8 34 24"
+        fill="none"
+        stroke="url(#grokMarkGrad)"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        opacity="0.75"
+      />
+      {/* Center spark */}
+      <circle cx="24" cy="24" r="2.2" fill="url(#grokMarkGrad)" opacity="0.95" />
     </svg>
   );
 }
@@ -48,9 +77,9 @@ export function TopBar() {
 
   return (
     <header className="topbar topbar--grok">
-      <div className="brand brand--grok">
+      <div className="brand brand--grok" title="Grok Games">
         <GrokGamesMark />
-        <div className="brand-text">
+        <div className="brand-text brand-text--grok">
           <strong className="brand-grok">Grok</strong>
           <span className="brand-games">GAMES</span>
         </div>

@@ -431,38 +431,48 @@ a {
 
 .brand--grok {
   min-width: auto;
-  gap: 0.55rem;
+  gap: 0.6rem;
+  align-items: center;
 }
 
 .grok-games-mark {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 10px rgba(46, 230, 255, 0.45));
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.35))
+    drop-shadow(0 0 18px rgba(46, 230, 255, 0.45));
 }
 
-.brand--grok .brand-text {
-  gap: 0;
+.brand-text--grok {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0 !important;
+  line-height: 1;
 }
 
 .brand-grok {
   font-family: var(--font-display);
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 800;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.01em;
   line-height: 1.05;
-  background: linear-gradient(135deg, #e8fbff, #5ef0ff);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  /* Mock: bright white Grok, soft cyan edge */
+  color: #f5fcff;
+  text-shadow: 0 0 18px rgba(46, 230, 255, 0.35);
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
 }
 
 .brand-games {
-  font-size: 0.62rem !important;
-  letter-spacing: 0.22em !important;
+  font-size: 0.58rem !important;
+  letter-spacing: 0.28em !important;
   font-weight: 700 !important;
-  color: var(--cyan-soft) !important;
-  opacity: 0.9;
+  color: rgba(180, 245, 255, 0.85) !important;
+  opacity: 1;
+  margin-top: 0.12rem;
+  margin-left: 0.05rem;
 }
 
 .core-pill--star {
