@@ -7,6 +7,8 @@ import { Discover } from "./pages/Discover";
 import { Home } from "./pages/Home";
 import { Pack } from "./pages/Pack";
 import { PlatformSelect } from "./pages/PlatformSelect";
+import { Play } from "./pages/Play";
+import { Results } from "./pages/Results";
 
 function ChooseRoute() {
   const { platform } = usePlatform();
@@ -26,6 +28,8 @@ function AppRoutes() {
         <Route path="create" element={<Create />} />
         <Route path="pack" element={<Pack />} />
         <Route path="codex" element={<Codex />} />
+        <Route path="play/:id" element={<Play />} />
+        <Route path="results/:id" element={<Results />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

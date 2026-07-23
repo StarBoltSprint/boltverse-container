@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { Experience } from "../data/mock";
 import { typeLabel } from "../data/mock";
 
@@ -7,6 +8,8 @@ interface Props {
 }
 
 export function ExperienceCard({ experience, featured }: Props) {
+  const playTo = `/play/${experience.id}`;
+
   return (
     <article className={`exp-card${featured ? " featured" : ""}`}>
       <div className="exp-thumb" aria-hidden>
@@ -28,15 +31,15 @@ export function ExperienceCard({ experience, featured }: Props) {
           ))}
         </div>
         {featured && (
-          <button type="button" className="btn-play">
+          <Link to={playTo} className="btn-play">
             Play
-          </button>
+          </Link>
         )}
       </div>
       {!featured && (
-        <button type="button" className="btn-play">
+        <Link to={playTo} className="btn-play">
           Play
-        </button>
+        </Link>
       )}
     </article>
   );
