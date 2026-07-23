@@ -478,10 +478,11 @@ a {
 }
 
 .core-pill-heart {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
-  filter: drop-shadow(0 0 8px rgba(46, 230, 255, 0.7));
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 0 8px rgba(46, 230, 255, 0.7)) brightness(1.15);
   animation: pulse-core 2.8s ease-in-out infinite;
 }
 
@@ -544,50 +545,51 @@ a {
   position: relative;
   display: grid;
   place-items: center;
-  /* Tall stage so a large heart has room */
-  min-height: clamp(340px, 58vh, 620px);
+  min-height: clamp(380px, 56vh, 640px);
   width: 100%;
-  margin: 0.1rem 0 1.1rem;
+  margin: 0.15rem 0 0.85rem;
   overflow: visible;
 }
 
 .hero-core-stars {
   position: absolute;
-  inset: -30% -20%;
+  inset: -40% -30%;
   pointer-events: none;
   background-image:
-    radial-gradient(1.5px 1.5px at 10% 20%, rgba(255, 255, 255, 0.7), transparent),
-    radial-gradient(1px 1px at 30% 70%, rgba(255, 255, 255, 0.5), transparent),
-    radial-gradient(1.5px 1.5px at 70% 30%, rgba(255, 255, 255, 0.65), transparent),
-    radial-gradient(1px 1px at 85% 60%, rgba(255, 255, 255, 0.45), transparent),
-    radial-gradient(1.5px 1.5px at 50% 80%, rgba(46, 230, 255, 0.6), transparent),
-    radial-gradient(1px 1px at 20% 50%, rgba(255, 255, 255, 0.4), transparent);
-  opacity: 0.9;
+    radial-gradient(1.5px 1.5px at 10% 20%, rgba(255, 255, 255, 0.75), transparent),
+    radial-gradient(1px 1px at 30% 70%, rgba(255, 255, 255, 0.55), transparent),
+    radial-gradient(1.5px 1.5px at 70% 30%, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1px 1px at 85% 60%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 50% 80%, rgba(46, 230, 255, 0.65), transparent),
+    radial-gradient(1px 1px at 20% 50%, rgba(255, 255, 255, 0.45), transparent),
+    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(20, 80, 120, 0.25), transparent 70%);
+  opacity: 1;
 }
 
-/*
- * Heart asset has lots of black padding around the gem.
- * Box is large AND we scale the image so the gem itself fills the hero.
- */
+/* Floating gem — no hard box, large presence */
 .star-core-visual--hero {
-  width: min(92vw, 560px);
-  height: min(92vw, 560px);
+  width: min(96vw, 520px);
+  height: min(96vw, 560px); /* a bit taller / longer */
   max-width: 100%;
   position: relative;
   z-index: 1;
   display: grid;
+  grid-template: 1fr / 1fr;
   place-items: center;
   overflow: visible;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 @media (min-width: 900px) {
   .star-core-visual--hero {
-    width: min(640px, 55vw);
-    height: min(640px, 55vw);
+    width: min(580px, 52vw);
+    height: min(620px, 58vw);
   }
 
   .hero-core-stage {
-    min-height: clamp(420px, 62vh, 680px);
+    min-height: clamp(460px, 60vh, 700px);
   }
 }
 
@@ -601,38 +603,98 @@ a {
   height: 28px;
 }
 
+/* Soft circular atmosphere (never rectangular) */
+.star-core-aura {
+  position: absolute;
+  inset: 5% 8%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(80, 220, 255, 0.35), transparent 55%),
+    radial-gradient(circle at 50% 55%, rgba(40, 120, 180, 0.2), transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+  animation: pulse-core 4s ease-in-out infinite;
+}
+
 .star-core-bloom {
   position: absolute;
-  inset: -5%;
+  inset: 12% 15%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(46, 230, 255, 0.5), transparent 60%);
-  filter: blur(36px);
-  animation: pulse-core 3.2s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(120, 240, 255, 0.55), transparent 58%);
+  filter: blur(28px);
+  animation: pulse-core 2.8s ease-in-out infinite;
   pointer-events: none;
 }
 
-.star-core-heart-img {
-  /* Zoom past PNG padding so the crystal heart is the focus */
-  width: 155%;
-  height: 155%;
+.star-core-visual--hero .star-core-heart-img {
+  grid-area: 1 / 1;
+  width: 108%;
+  height: 118%; /* slightly longer vertical presence */
   max-width: none;
   object-fit: contain;
-  object-position: center center;
+  object-position: center 46%;
   position: relative;
-  z-index: 1;
-  filter:
-    drop-shadow(0 0 40px rgba(46, 230, 255, 0.75))
-    drop-shadow(0 0 80px rgba(46, 230, 255, 0.4));
-  animation: heart-float 4.5s ease-in-out infinite;
+  z-index: 2;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  /* Soft floating gem in space — no plate / frame */
+  mix-blend-mode: screen;
   user-select: none;
   -webkit-user-drag: none;
+  pointer-events: none;
 }
 
-.star-core-visual--hero .star-core-heart-img {
-  /* Slightly taller presence */
-  width: 160%;
-  height: 175%;
-  transform-origin: center center;
+.star-core-heart-img--glow {
+  z-index: 1 !important;
+  opacity: 0.55;
+  filter: blur(14px) brightness(1.25) saturate(1.2);
+  animation: heart-float 5s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+.star-core-heart-img--main {
+  z-index: 3 !important;
+  opacity: 1;
+  filter:
+    drop-shadow(0 0 18px rgba(46, 230, 255, 0.45))
+    drop-shadow(0 0 48px rgba(46, 230, 255, 0.25))
+    brightness(1.08)
+    contrast(1.05)
+    saturate(1.15);
+  animation: heart-float 5s ease-in-out infinite;
+  /* screen kills residual black plate if any */
+  mix-blend-mode: screen;
+}
+
+/* sparklies around gem */
+.star-core-visual--hero .star-core-spark {
+  z-index: 4;
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 12px #5ef0ff, 0 0 24px rgba(46, 230, 255, 0.8);
+  animation: spark 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.star-core-visual--hero .star-core-spark--1 {
+  top: 18%;
+  right: 22%;
+}
+.star-core-visual--hero .star-core-spark--2 {
+  bottom: 22%;
+  left: 18%;
+  animation-delay: 0.9s;
+}
+.star-core-visual--hero .star-core-spark--3 {
+  top: 42%;
+  right: 12%;
+  animation-delay: 1.6s;
+  width: 4px;
+  height: 4px;
 }
 
 @keyframes heart-float {

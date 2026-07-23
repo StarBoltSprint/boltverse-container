@@ -60,7 +60,7 @@ export function TopBar() {
         <span className="core-pill-label">Star Core</span>
         <img
           className="core-pill-heart"
-          src={`${import.meta.env.BASE_URL}images/star-core-heart.png`}
+          src={`${import.meta.env.BASE_URL}images/star-core-heart-fx.png`}
           alt=""
           draggable={false}
         />

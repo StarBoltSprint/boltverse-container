@@ -3,24 +3,31 @@ interface Props {
   size?: "hero" | "sm" | "pill";
 }
 
-/** Crystal heart Star Core — uses provided art asset */
+/**
+ * Crystal Star Core — transparent asset + soft bloom so it sits in the
+ * starfield (no hard rectangular “pasted image” look).
+ */
 export function StarCoreVisual({ percent, size = "hero" }: Props) {
   const clamped = Math.max(0, Math.min(100, percent));
+  const src = `${import.meta.env.BASE_URL}images/star-core-heart-fx.png`;
+
   return (
     <div
       className={`star-core-visual star-core-visual--${size}`}
       style={{ ["--core-pct" as string]: `${clamped}%` }}
       aria-hidden
     >
+      {/* Ambient nebula glow behind the gem */}
+      <div className="star-core-aura" />
       <div className="star-core-bloom" />
-      <img
-        className="star-core-heart-img"
-        src={`${import.meta.env.BASE_URL}images/star-core-heart.png`}
-        alt=""
-        draggable={false}
-      />
+
+      {/* Double-layer for richness: soft underglow + main gem */}
+      <img className="star-core-heart-img star-core-heart-img--glow" src={src} alt="" draggable={false} />
+      <img className="star-core-heart-img star-core-heart-img--main" src={src} alt="" draggable={false} />
+
       <div className="star-core-spark star-core-spark--1" />
       <div className="star-core-spark star-core-spark--2" />
+      <div className="star-core-spark star-core-spark--3" />
     </div>
   );
 }
