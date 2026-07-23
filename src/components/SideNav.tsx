@@ -6,6 +6,7 @@ const items = [
   { to: "/create", label: "Create", icon: "⚒️", end: false },
   { to: "/pack", label: "Pack", icon: "🐺", end: false },
   { to: "/codex", label: "Codex", icon: "📜", end: false },
+  { to: "/profile", label: "Profile", icon: "👤", end: false },
 ] as const;
 
 export function SideNav() {

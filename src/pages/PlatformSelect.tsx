@@ -6,16 +6,16 @@ import { PLATFORMS, type Platform } from "../platform/types";
 
 export function PlatformSelect() {
   const { setPlatform } = usePlatform();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const navigate = useNavigate();
 
   function choose(id: Platform) {
     setPlatform(id);
-    if (!isLoggedIn) {
+    if (!isLoggedIn || !user) {
       navigate("/auth", { replace: true });
       return;
     }
-    navigate(isOnboardingDone() ? "/" : "/onboarding", { replace: true });
+    navigate(isOnboardingDone(user.id) ? "/" : "/onboarding", { replace: true });
   }
 
   return (

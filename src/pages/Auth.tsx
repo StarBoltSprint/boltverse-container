@@ -8,7 +8,14 @@ type Mode = "pick" | "x" | "local";
 
 export function Auth() {
   const { platform } = usePlatform();
-  const { isLoggedIn, connectWithX, signUpLocal } = useAuth();
+  const {
+    isLoggedIn,
+    user,
+    accounts,
+    connectWithX,
+    signUpLocal,
+    loginAccount,
+  } = useAuth();
   const navigate = useNavigate();
 
   const [mode, setMode] = useState<Mode>("pick");
@@ -18,45 +25,63 @@ export function Auth() {
   const [avatar, setAvatar] = useState("🐺");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [banner, setBanner] = useState<string | null>(null);
 
   if (!platform) {
     return <Navigate to="/choose" replace />;
   }
 
-  if (isLoggedIn) {
-    return <Navigate to={isOnboardingDone() ? "/" : "/onboarding"} replace />;
+  if (isLoggedIn && user) {
+    return (
+      <Navigate
+        to={isOnboardingDone(user.id) ? "/" : "/onboarding"}
+        replace
+      />
+    );
   }
 
-  function afterAuth() {
-    navigate(isOnboardingDone() ? "/" : "/onboarding", { replace: true });
+  function afterAuth(userId: string, isNew: boolean) {
+    setBanner(isNew ? "Account registered and saved." : "Welcome back — account loaded.");
+    navigate(isOnboardingDone(userId) ? "/" : "/onboarding", { replace: true });
   }
 
   function onConnectX(e: FormEvent) {
     e.preventDefault();
     setError(null);
     setBusy(true);
-    // Static GitHub Pages cannot complete real X OAuth without a backend.
-    // We link an X handle as session identity (demo / client-side).
     window.setTimeout(() => {
       try {
-        connectWithX(xHandle, xDisplay || undefined);
-        afterAuth();
+        const before = accounts.some(
+          (a) => a.xHandle?.toLowerCase() === xHandle.trim().replace(/^@/, "").toLowerCase()
+        );
+        const u = connectWithX(xHandle, xDisplay || undefined);
+        afterAuth(u.id, !before);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Could not connect");
         setBusy(false);
       }
-    }, 600);
+    }, 450);
   }
 
   function onCreateLocal(e: FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!localName.trim()) {
-      setError("Choose a Pack name");
-      return;
+    try {
+      const u = signUpLocal(localName, avatar);
+      afterAuth(u.id, true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not create account");
     }
-    signUpLocal(localName, avatar);
-    afterAuth();
+  }
+
+  function onReconnect(id: string) {
+    setError(null);
+    try {
+      const u = loginAccount(id);
+      afterAuth(u.id, false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not sign in");
+    }
   }
 
   return (
@@ -69,24 +94,61 @@ export function Auth() {
           </span>
           <div>
             <h1>Join the Pack</h1>
-            <p>Sign in · Boltverse Citadel</p>
+            <p>Register once · reconnect anytime</p>
           </div>
         </div>
+
+        {banner && (
+          <div className="success-banner" role="status">
+            {banner}
+          </div>
+        )}
 
         {mode === "pick" && (
           <>
             <h2 className="platform-gate-title">Connect or create</h2>
             <p className="platform-gate-sub">
-              Link an X handle, or create a local Pack name. Your profile stays on this device for
-              now (GitHub Pages demo — full X OAuth needs a backend later).
+              Accounts are <strong>saved on this browser</strong>. Names and X handles must be{" "}
+              <strong>unique</strong>. Sign in again later from your saved accounts list.
             </p>
+
+            {accounts.length > 0 && (
+              <section className="panel auth-saved" style={{ marginBottom: "1.25rem" }}>
+                <h3 className="panel-title">Saved accounts — tap to reconnect</h3>
+                <div className="stack">
+                  {accounts.map((a) => (
+                    <button
+                      key={a.id}
+                      type="button"
+                      className="saved-account-row"
+                      onClick={() => onReconnect(a.id)}
+                    >
+                      <span className="saved-account-avatar" aria-hidden>
+                        {a.avatarEmoji}
+                      </span>
+                      <span className="saved-account-meta">
+                        <strong>{a.displayName}</strong>
+                        <span>
+                          {a.method === "x" && a.xHandle
+                            ? `@${a.xHandle} · X`
+                            : "Local Pack name"}{" "}
+                          · last{" "}
+                          {new Date(a.lastLoginAt).toLocaleDateString()}
+                        </span>
+                      </span>
+                      <span className="saved-account-cta">Enter →</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
 
             <div className="auth-pick">
               <button type="button" className="auth-method-card auth-x" onClick={() => setMode("x")}>
                 <span className="auth-method-icon">𝕏</span>
                 <span className="auth-method-label">Connect with X</span>
                 <span className="auth-method-blurb">
-                  Use your X username as Pack identity (@handle)
+                  Register or reconnect with your @handle (unique)
                 </span>
                 <span className="platform-card-cta">Continue →</span>
               </button>
@@ -99,7 +161,7 @@ export function Auth() {
                 <span className="auth-method-icon">🐺</span>
                 <span className="auth-method-label">Create Pack name</span>
                 <span className="auth-method-blurb">
-                  No X needed — pick a name and enter the Citadel
+                  New account — name cannot match anyone already registered
                 </span>
                 <span className="platform-card-cta">Continue →</span>
               </button>
@@ -111,8 +173,8 @@ export function Auth() {
           <form className="auth-form" onSubmit={onConnectX}>
             <h2 className="platform-gate-title">Connect with X</h2>
             <p className="platform-gate-sub">
-              Enter the handle you want linked. This is a <strong>client-side link</strong> (no OAuth
-              redirect on this static host). Opens X profile in a new tab for convenience.
+              If this handle is already registered, you will be signed back into that account. New
+              handles create a permanent entry (unique display name required).
             </p>
 
             <label className="field">
@@ -128,11 +190,11 @@ export function Auth() {
             </label>
 
             <label className="field">
-              <span>Display name (optional)</span>
+              <span>Display name (new accounts only)</span>
               <input
                 value={xDisplay}
                 onChange={(e) => setXDisplay(e.target.value)}
-                placeholder="How you appear in the Pack"
+                placeholder="Unique Pack name if registering"
                 maxLength={32}
               />
             </label>
@@ -143,18 +205,8 @@ export function Auth() {
               <button type="button" className="btn-ghost" onClick={() => setMode("pick")}>
                 Back
               </button>
-              <button
-                type="button"
-                className="btn-ghost"
-                onClick={() => {
-                  const h = xHandle.trim().replace(/^@/, "");
-                  if (h) window.open(`https://x.com/${h}`, "_blank", "noopener,noreferrer");
-                }}
-              >
-                Open X
-              </button>
               <button type="submit" className="btn-play" disabled={busy}>
-                {busy ? "Connecting…" : "Connect handle"}
+                {busy ? "Saving…" : "Connect & save"}
               </button>
             </div>
           </form>
@@ -164,11 +216,11 @@ export function Auth() {
           <form className="auth-form" onSubmit={onCreateLocal}>
             <h2 className="platform-gate-title">Create Pack name</h2>
             <p className="platform-gate-sub">
-              Local account on this browser. Used on publishes, Pack leaderboard, and Codex.
+              Registers a new account. If the name is taken, pick another.
             </p>
 
             <label className="field">
-              <span>Pack name</span>
+              <span>Pack name (unique)</span>
               <input
                 value={localName}
                 onChange={(e) => setLocalName(e.target.value)}
@@ -202,7 +254,7 @@ export function Auth() {
                 Back
               </button>
               <button type="submit" className="btn-play">
-                Create account
+                Register account
               </button>
             </div>
           </form>

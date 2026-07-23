@@ -20,6 +20,7 @@ import {
   loadDrafts,
   loadHowlCount,
   loadPublished,
+  migrateLegacyContentToUser,
   newDraftId,
   saveDisplayName,
   saveDrafts,
@@ -53,25 +54,38 @@ const ContentContext = createContext<ContentContextValue | null>(null);
 
 export function ContentProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [published, setPublished] = useState<Experience[]>(() => loadPublished());
-  const [drafts, setDrafts] = useState<DraftExperience[]>(() => loadDrafts());
-  const [displayName, setDisplayNameState] = useState(() => loadDisplayName());
-  const [howlCount, setHowlCount] = useState(() => loadHowlCount());
-  const [codexUnlocks, setCodexUnlocks] = useState<string[]>(() => loadCodexUnlocks());
+  const userId = user?.id ?? null;
 
+  const [published, setPublished] = useState<Experience[]>([]);
+  const [drafts, setDrafts] = useState<DraftExperience[]>([]);
+  const [displayName, setDisplayNameState] = useState("Pack Guardian");
+  const [howlCount, setHowlCount] = useState(0);
+  const [codexUnlocks, setCodexUnlocks] = useState<string[]>([]);
+
+  // Load / switch save slot when account changes
   useEffect(() => {
+    if (userId) migrateLegacyContentToUser(userId);
+    setPublished(loadPublished(userId));
+    setDrafts(loadDrafts(userId));
+    setHowlCount(loadHowlCount(userId));
+    setCodexUnlocks(loadCodexUnlocks(userId));
     if (user?.displayName) {
-      saveDisplayName(user.displayName);
+      saveDisplayName(user.displayName, userId);
       setDisplayNameState(user.displayName);
+    } else {
+      setDisplayNameState(loadDisplayName(userId));
     }
-  }, [user]);
+  }, [userId, user?.displayName]);
 
   const discoverFeed = useMemo(() => getFullDiscoverFeed(published), [published]);
 
-  const setDisplayName = useCallback((name: string) => {
-    saveDisplayName(name);
-    setDisplayNameState(loadDisplayName());
-  }, []);
+  const setDisplayName = useCallback(
+    (name: string) => {
+      saveDisplayName(name, userId);
+      setDisplayNameState(loadDisplayName(userId));
+    },
+    [userId]
+  );
 
   const saveDraft = useCallback(
     (input: Omit<DraftExperience, "id" | "updatedAt"> & { id?: string }) => {
@@ -89,21 +103,24 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         const next = [...prev.filter((d) => d.id !== id), draft].sort(
           (a, b) => b.updatedAt - a.updatedAt
         );
-        saveDrafts(next);
+        saveDrafts(next, userId);
         return next;
       });
       return draft;
     },
-    []
+    [userId]
   );
 
-  const deleteDraft = useCallback((id: string) => {
-    setDrafts((prev) => {
-      const next = prev.filter((d) => d.id !== id);
-      saveDrafts(next);
-      return next;
-    });
-  }, []);
+  const deleteDraft = useCallback(
+    (id: string) => {
+      setDrafts((prev) => {
+        const next = prev.filter((d) => d.id !== id);
+        saveDrafts(next, userId);
+        return next;
+      });
+    },
+    [userId]
+  );
 
   const publishDraft = useCallback(
     (id: string) => {
@@ -112,17 +129,17 @@ export function ContentProvider({ children }: { children: ReactNode }) {
       const exp = draftToExperience(draft, displayName);
       setPublished((prev) => {
         const next = [exp, ...prev.filter((p) => p.id !== exp.id)];
-        savePublished(next);
+        savePublished(next, userId);
         return next;
       });
       setDrafts((prev) => {
         const next = prev.filter((d) => d.id !== id);
-        saveDrafts(next);
+        saveDrafts(next, userId);
         return next;
       });
       return exp;
     },
-    [drafts, displayName]
+    [drafts, displayName, userId]
   );
 
   const publishNew = useCallback(
@@ -137,29 +154,32 @@ export function ContentProvider({ children }: { children: ReactNode }) {
       const exp = draftToExperience(draft, displayName);
       setPublished((prev) => {
         const next = [exp, ...prev.filter((p) => p.id !== exp.id)];
-        savePublished(next);
+        savePublished(next, userId);
         return next;
       });
       setDrafts((prev) => {
         const next = prev.filter((d) => d.id !== draft.id);
-        saveDrafts(next);
+        saveDrafts(next, userId);
         return next;
       });
       return exp;
     },
-    [displayName, saveDraft]
+    [displayName, saveDraft, userId]
   );
 
-  const unlockCodex = useCallback((id: string) => {
-    addCodexUnlock(id);
-    setCodexUnlocks(loadCodexUnlocks());
-  }, []);
+  const unlockCodex = useCallback(
+    (id: string) => {
+      addCodexUnlock(id, userId);
+      setCodexUnlocks(loadCodexUnlocks(userId));
+    },
+    [userId]
+  );
 
   const doHowl = useCallback(() => {
-    const n = bumpHowlCount();
+    const n = bumpHowlCount(userId);
     setHowlCount(n);
     return n;
-  }, []);
+  }, [userId]);
 
   const findExperience = useCallback(
     (id: string) => published.find((e) => e.id === id) ?? discoverFeed.find((e) => e.id === id),

@@ -34,13 +34,13 @@ const STEPS = [
     id: "create",
     emoji: "⚒️",
     title: "Create for the Pack",
-    body: "Forge your own experiences, publish them, and watch them appear in Discover. Powered by xAI & YOU — the Pack writes the mythos together.",
+    body: "Forge your own experiences, publish them, and watch them appear in Discover. Your account saves your publishes and progress.",
   },
   {
     id: "ready",
     emoji: "🏰",
-    title: "You’re ready",
-    body: "Your Pack identity is set. Enter the Citadel and start sprinting.",
+    title: "You’re registered",
+    body: "Your Pack identity is saved. Reconnect anytime from the account screen. Open Profile anytime from the menu.",
   },
 ] as const;
 
@@ -53,7 +53,7 @@ export function Onboarding() {
 
   if (!platform) return <Navigate to="/choose" replace />;
   if (!isLoggedIn || !user) return <Navigate to="/auth" replace />;
-  if (isOnboardingDone()) return <Navigate to="/" replace />;
+  if (isOnboardingDone(user.id)) return <Navigate to="/" replace />;
 
   const current = STEPS[step];
   const isLast = step === STEPS.length - 1;
@@ -61,7 +61,7 @@ export function Onboarding() {
   function next() {
     if (isLast) {
       setDisplayName(user!.displayName || displayName);
-      setOnboardingDone();
+      setOnboardingDone(user!.id);
       navigate("/", { replace: true });
       return;
     }
@@ -101,8 +101,8 @@ export function Onboarding() {
               <strong>{user.displayName}</strong>
               <p>
                 {user.method === "x"
-                  ? `Connected as @${user.xHandle} on X`
-                  : "Local Pack account"}
+                  ? `Connected as @${user.xHandle} on X · saved account`
+                  : "Local Pack account · saved"}
               </p>
             </div>
           </div>

@@ -7,33 +7,24 @@ export interface AuthUser {
   /** X handle without @ when method is x */
   xHandle?: string;
   avatarEmoji: string;
+  bio?: string;
   createdAt: number;
+  lastLoginAt: number;
 }
 
-export const AUTH_STORAGE_KEY = "boltverse-auth-user-v1";
-
-export function loadAuthUser(): AuthUser | null {
-  try {
-    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
-    if (!raw) return null;
-    const u = JSON.parse(raw) as AuthUser;
-    if (!u?.id || !u?.displayName || !u?.method) return null;
-    return u;
-  } catch {
-    return null;
-  }
-}
-
-export function saveAuthUser(user: AuthUser): void {
-  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
-}
-
-export function clearAuthUser(): void {
-  localStorage.removeItem(AUTH_STORAGE_KEY);
-}
+export const SESSION_KEY = "boltverse-session-user-id-v2";
+export const REGISTRY_KEY = "boltverse-accounts-registry-v2";
 
 export function normalizeXHandle(input: string): string {
   return input.trim().replace(/^@+/, "").replace(/\s+/g, "");
+}
+
+export function normalizeName(input: string): string {
+  return input.trim().replace(/\s+/g, " ");
+}
+
+export function nameKey(input: string): string {
+  return normalizeName(input).toLowerCase();
 }
 
 export function newUserId(): string {

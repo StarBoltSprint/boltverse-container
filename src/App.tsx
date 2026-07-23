@@ -13,15 +13,16 @@ import { Onboarding } from "./pages/Onboarding";
 import { Pack } from "./pages/Pack";
 import { PlatformSelect } from "./pages/PlatformSelect";
 import { Play } from "./pages/Play";
+import { Profile } from "./pages/Profile";
 import { Results } from "./pages/Results";
 import { PlatformProvider, usePlatform } from "./platform/PlatformContext";
 
 function ChooseRoute() {
   const { platform } = usePlatform();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   if (!platform) return <PlatformSelect />;
-  if (!isLoggedIn) return <Navigate to="/auth" replace />;
-  if (!isOnboardingDone()) return <Navigate to="/onboarding" replace />;
+  if (!isLoggedIn || !user) return <Navigate to="/auth" replace />;
+  if (!isOnboardingDone(user.id)) return <Navigate to="/onboarding" replace />;
   return <Navigate to="/" replace />;
 }
 
@@ -33,19 +34,19 @@ function AuthRoute() {
 
 function OnboardingRoute() {
   const { platform } = usePlatform();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   if (!platform) return <Navigate to="/choose" replace />;
-  if (!isLoggedIn) return <Navigate to="/auth" replace />;
-  if (isOnboardingDone()) return <Navigate to="/" replace />;
+  if (!isLoggedIn || !user) return <Navigate to="/auth" replace />;
+  if (isOnboardingDone(user.id)) return <Navigate to="/" replace />;
   return <Onboarding />;
 }
 
 function RequireReady({ children }: { children: ReactNode }) {
   const { platform } = usePlatform();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   if (!platform) return <Navigate to="/choose" replace />;
-  if (!isLoggedIn) return <Navigate to="/auth" replace />;
-  if (!isOnboardingDone()) return <Navigate to="/onboarding" replace />;
+  if (!isLoggedIn || !user) return <Navigate to="/auth" replace />;
+  if (!isOnboardingDone(user.id)) return <Navigate to="/onboarding" replace />;
   return <>{children}</>;
 }
 
@@ -67,6 +68,7 @@ function AppRoutes() {
         <Route path="create" element={<Create />} />
         <Route path="pack" element={<Pack />} />
         <Route path="codex" element={<Codex />} />
+        <Route path="profile" element={<Profile />} />
         <Route path="play/:id" element={<Play />} />
         <Route path="results/:id" element={<Results />} />
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -76,7 +78,7 @@ function AppRoutes() {
 }
 
 /**
- * Flow: platform → auth (X or local name) → onboarding → shell.
+ * Flow: platform → auth (register / reconnect) → onboarding → shell + profile.
  */
 export default function App() {
   return (

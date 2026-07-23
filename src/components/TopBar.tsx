@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { useContent } from "../content/ContentContext";
 import { PERSONAL_RESONANCE, STAR_CORE_CHARGE } from "../data/mock";
@@ -13,7 +13,7 @@ export function TopBar() {
   const meta = PLATFORMS.find((p) => p.id === platform);
 
   function onSignOut() {
-    if (!window.confirm("Sign out of the Citadel on this device?")) return;
+    if (!window.confirm("Sign out? Your account stays registered — reconnect anytime.")) return;
     signOut();
     navigate("/auth", { replace: true });
   }
@@ -66,13 +66,14 @@ export function TopBar() {
         >
           ⎋ <span className="platform-switch-label">Out</span>
         </button>
-        <div
-          className="avatar"
-          title={label}
-          aria-label={label}
+        <Link
+          to="/profile"
+          className="avatar avatar-link"
+          title={`Profile · ${label}`}
+          aria-label={`Open profile for ${label}`}
         >
           {user?.avatarEmoji ?? "🐺"}
-        </div>
+        </Link>
       </div>
     </header>
   );
