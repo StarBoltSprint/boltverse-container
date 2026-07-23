@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { isOnboardingDone } from "../data/contentStore";
 import { usePlatform } from "../platform/PlatformContext";
 import { PLATFORMS, type Platform } from "../platform/types";
 
@@ -8,7 +9,7 @@ export function PlatformSelect() {
 
   function choose(id: Platform) {
     setPlatform(id);
-    navigate("/", { replace: true });
+    navigate(isOnboardingDone() ? "/" : "/onboarding", { replace: true });
   }
 
   return (

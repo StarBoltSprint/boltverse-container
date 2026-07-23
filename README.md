@@ -16,11 +16,13 @@ Desktop / Android / iOS web shell for the **Boltverse Games Section** (digital T
 ## What’s included
 
 - **Platform chooser**: Desktop / Android / iOS
-- **Desktop shell**: side nav + wide Home
-- **Android / iOS shell**: phone frame + bottom tabs
-- **Switch layout** anytime from the top bar
+- **Citadel onboarding**: Bolt, Star Core, quests, create, Pack name
+- **Desktop / mobile shells** + switch anytime
 - **Home**: Star Core, quick actions, featured, continue, dailies, events
-- **Discover / Create / Pack / Codex**: scaffold + mock data
+- **Play**: Mini-Quest samples + Story Branch choices + Results
+- **Create → Publish**: drafts + publish; cards appear on Discover
+- **Pack**: Howl mock, goals, leaderboard
+- **Codex**: lore entries + unlocks from story endings
 
 Hosted on **GitHub Pages** — free public HTML app.
 

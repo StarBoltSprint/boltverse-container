@@ -1,8 +1,8 @@
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { useMemo, useState, useEffect, useCallback } from "react";
+import { useContent } from "../content/ContentContext";
 import {
   buildGenericResult,
-  getExperienceById,
   loreQuiz,
   silentSeedStory,
   stormOrbQuest,
@@ -14,7 +14,8 @@ import { savePlayResult } from "../data/playSession";
 
 export function Play() {
   const { id = "" } = useParams();
-  const exp = useMemo(() => getExperienceById(id), [id]);
+  const { findExperience } = useContent();
+  const exp = useMemo(() => findExperience(id), [id, findExperience]);
 
   if (!exp) {
     return (
@@ -339,7 +340,8 @@ function SilentSeedStory({
 
 function GenericPlay({ experienceId }: { experienceId: string }) {
   const navigate = useNavigate();
-  const exp = getExperienceById(experienceId)!;
+  const { findExperience } = useContent();
+  const exp = findExperience(experienceId)!;
   const [step, setStep] = useState(0);
 
   function advance() {

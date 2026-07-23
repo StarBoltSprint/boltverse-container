@@ -1,21 +1,29 @@
 import { Link, useLocation, useParams } from "react-router-dom";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { useContent } from "../content/ContentContext";
 import type { PlayResult } from "../data/playContent";
-import { getExperienceById } from "../data/playContent";
 import { loadPlayResult } from "../data/playSession";
 import { typeLabel } from "../data/mock";
+import { CODEX_UNLOCK_MAP } from "./Codex";
 
 export function Results() {
   const { id = "" } = useParams();
   const location = useLocation();
   const fromState = location.state as PlayResult | null;
+  const { findExperience, unlockCodex } = useContent();
 
   const result = useMemo(() => {
     if (fromState?.experienceId) return fromState;
     return loadPlayResult(id);
   }, [fromState, id]);
 
-  const exp = getExperienceById(id);
+  const exp = findExperience(id);
+
+  useEffect(() => {
+    if (!result?.codexUnlock) return;
+    const mapped = CODEX_UNLOCK_MAP[result.codexUnlock];
+    if (mapped) unlockCodex(mapped);
+  }, [result, unlockCodex]);
 
   if (!result) {
     return (
@@ -68,6 +76,9 @@ export function Results() {
         <div className="panel" style={{ marginTop: "1rem" }}>
           <h2 className="panel-title">Codex unlock</h2>
           <p style={{ margin: 0, color: "var(--cyan)" }}>📜 {result.codexUnlock}</p>
+          <Link to="/codex" className="btn-ghost" style={{ marginTop: "0.75rem", display: "inline-flex" }}>
+            Open Codex
+          </Link>
         </div>
       )}
 
@@ -99,7 +110,7 @@ export function Results() {
         <Link to="/" className="btn-ghost">
           Home
         </Link>
-        {exp?.type === "story-branch" && (
+        {(exp?.type === "story-branch" || result.codexUnlock) && (
           <Link to="/codex" className="btn-ghost">
             Open Codex
           </Link>

@@ -1385,4 +1385,223 @@ a.btn-play {
   margin-top: 1.25rem;
 }
 
+/* ═══════════════════════════════════════════
+   Onboarding, Create, Pack, Codex polish
+   ═══════════════════════════════════════════ */
+
+.onboarding-card {
+  max-width: 520px;
+}
+
+.onboarding-progress {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
+}
+
+.onboarding-progress i {
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.onboarding-progress i.on {
+  background: linear-gradient(90deg, var(--cyan-dim), var(--cyan));
+  box-shadow: 0 0 8px var(--cyan-glow);
+}
+
+.onboarding-emoji {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.onboarding-name {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0 0 1.25rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.onboarding-name input,
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(6, 10, 20, 0.75);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 88px;
+}
+
+.onboarding-name input:focus,
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: rgba(34, 211, 238, 0.55);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.12);
+}
+
+.onboarding-actions,
+.create-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  justify-content: flex-end;
+}
+
+.success-banner {
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  background: rgba(52, 211, 153, 0.1);
+  color: #a7f3d0;
+  font-size: 0.9rem;
+}
+
+.create-form .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.emoji-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.emoji-pick {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(34, 211, 238, 0.05);
+  font-size: 1.15rem;
+}
+
+.emoji-pick.on {
+  border-color: var(--cyan);
+  background: rgba(34, 211, 238, 0.18);
+  box-shadow: 0 0 12px var(--cyan-glow);
+}
+
+.draft-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.draft-row p {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.draft-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.leader-row {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.65rem 0.35rem;
+  border-bottom: 1px solid rgba(34, 211, 238, 0.08);
+}
+
+.leader-rank {
+  color: var(--cyan);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.leader-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.leader-meta span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.leader-score {
+  color: var(--cyan);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.pack-howl.howling .core-orb,
+.pack-howl.howling {
+  animation: pulse-core 0.6s ease-in-out infinite;
+}
+
+.codex-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgba(2, 6, 23, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.codex-modal {
+  width: min(440px, 100%);
+  max-height: 80vh;
+  overflow: auto;
+}
+
+button.codex-card {
+  font: inherit;
+  color: inherit;
+}
+
+
 

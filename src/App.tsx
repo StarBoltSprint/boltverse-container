@@ -1,28 +1,54 @@
+import type { ReactNode } from "react";
 import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Shell } from "./components/Shell";
-import { PlatformProvider, usePlatform } from "./platform/PlatformContext";
+import { ContentProvider } from "./content/ContentContext";
+import { isOnboardingDone } from "./data/contentStore";
 import { Codex } from "./pages/Codex";
 import { Create } from "./pages/Create";
 import { Discover } from "./pages/Discover";
 import { Home } from "./pages/Home";
+import { Onboarding } from "./pages/Onboarding";
 import { Pack } from "./pages/Pack";
 import { PlatformSelect } from "./pages/PlatformSelect";
 import { Play } from "./pages/Play";
 import { Results } from "./pages/Results";
+import { PlatformProvider, usePlatform } from "./platform/PlatformContext";
 
 function ChooseRoute() {
   const { platform } = usePlatform();
   if (platform) {
+    if (!isOnboardingDone()) return <Navigate to="/onboarding" replace />;
     return <Navigate to="/" replace />;
   }
   return <PlatformSelect />;
+}
+
+function OnboardingRoute() {
+  const { platform } = usePlatform();
+  if (!platform) return <Navigate to="/choose" replace />;
+  if (isOnboardingDone()) return <Navigate to="/" replace />;
+  return <Onboarding />;
+}
+
+function RequireReady({ children }: { children: ReactNode }) {
+  const { platform } = usePlatform();
+  if (!platform) return <Navigate to="/choose" replace />;
+  if (!isOnboardingDone()) return <Navigate to="/onboarding" replace />;
+  return <>{children}</>;
 }
 
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/choose" element={<ChooseRoute />} />
-      <Route element={<Shell />}>
+      <Route path="/onboarding" element={<OnboardingRoute />} />
+      <Route
+        element={
+          <RequireReady>
+            <Shell />
+          </RequireReady>
+        }
+      >
         <Route index element={<Home />} />
         <Route path="discover" element={<Discover />} />
         <Route path="create" element={<Create />} />
@@ -37,15 +63,17 @@ function AppRoutes() {
 }
 
 /**
- * HashRouter works on static hosts / *.grok.me without server rewrite rules.
- * First visit → platform chooser (Desktop / Android / iOS) → shell Home.
+ * Flow: platform chooser → Citadel onboarding → shell.
+ * HashRouter for static hosts / GitHub Pages.
  */
 export default function App() {
   return (
     <PlatformProvider>
-      <HashRouter>
-        <AppRoutes />
-      </HashRouter>
+      <ContentProvider>
+        <HashRouter>
+          <AppRoutes />
+        </HashRouter>
+      </ContentProvider>
     </PlatformProvider>
   );
 }

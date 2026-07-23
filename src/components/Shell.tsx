@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { usePlatform } from "../platform/PlatformContext";
 import { BottomNav } from "./BottomNav";
 import { SideNav } from "./SideNav";
@@ -6,10 +6,6 @@ import { TopBar } from "./TopBar";
 
 export function Shell() {
   const { platform, isMobile } = usePlatform();
-
-  if (!platform) {
-    return <Navigate to="/choose" replace />;
-  }
 
   const shellClass = [
     "app-shell",

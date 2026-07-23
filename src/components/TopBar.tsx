@@ -1,9 +1,11 @@
-import { PERSONAL_RESONANCE, PLAYER_NAME, STAR_CORE_CHARGE } from "../data/mock";
+import { useContent } from "../content/ContentContext";
+import { PERSONAL_RESONANCE, STAR_CORE_CHARGE } from "../data/mock";
 import { usePlatform } from "../platform/PlatformContext";
 import { PLATFORMS } from "../platform/types";
 
 export function TopBar() {
   const { platform, resetPlatform, isMobile } = usePlatform();
+  const { displayName } = useContent();
   const meta = PLATFORMS.find((p) => p.id === platform);
 
   return (
@@ -41,7 +43,7 @@ export function TopBar() {
         >
           {meta?.icon ?? "⚙️"} <span className="platform-switch-label">Switch</span>
         </button>
-        <div className="avatar" title={PLAYER_NAME} aria-label={PLAYER_NAME}>
+        <div className="avatar" title={displayName} aria-label={displayName}>
           🐺
         </div>
       </div>
