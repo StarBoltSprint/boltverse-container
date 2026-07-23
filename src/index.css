@@ -2500,6 +2500,160 @@ input:disabled {
   cursor: not-allowed;
 }
 
+/* ═══════════════════════════════════════════
+   Sprint Mini-Quest (Three.js)
+   ═══════════════════════════════════════════ */
+
+.sprint-quest {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--topbar-h) - 8px);
+  max-height: 100%;
+  margin: -0.5rem -0.5rem 0;
+  min-height: 420px;
+}
+
+.app-shell--mobile .sprint-quest {
+  height: calc(100% - 4px);
+  margin: 0;
+}
+
+.sprint-chrome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(3, 8, 18, 0.92);
+  backdrop-filter: blur(12px);
+  z-index: 5;
+  flex-shrink: 0;
+}
+
+.sprint-chrome-title {
+  flex: 1;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sprint-chrome-stats {
+  display: flex;
+  gap: 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--cyan-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.sprint-stage-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: #03060f;
+}
+
+.sprint-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.sprint-canvas canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.sprint-countdown {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(3, 6, 15, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 4;
+  pointer-events: none;
+}
+
+.sprint-countdown-label {
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cyan-soft);
+  font-weight: 700;
+}
+
+.sprint-countdown-num {
+  margin: 0.35rem 0;
+  font-family: var(--font-display);
+  font-size: 5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 0 40px rgba(46, 230, 255, 0.7);
+}
+
+.sprint-countdown-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-align: center;
+  max-width: 20rem;
+  line-height: 1.4;
+}
+
+.sprint-hud-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.75rem 1rem 1rem;
+  background: linear-gradient(transparent, rgba(3, 6, 15, 0.9));
+  z-index: 3;
+  pointer-events: none;
+}
+
+.sprint-bar-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  border: 1px solid rgba(46, 230, 255, 0.2);
+  margin-bottom: 0.45rem;
+}
+
+.sprint-bar-track > i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan-dim), var(--cyan), #a5f3fc);
+  box-shadow: 0 0 12px var(--cyan-glow);
+  transition: width 0.15s ease;
+}
+
+.sprint-hud-bottom p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.sprint-hud-bottom strong {
+  color: var(--cyan-soft);
+}
+
+/* When sprint is full-bleed inside main, reduce page padding */
+.main:has(.sprint-quest) {
+  padding: 0.5rem 0.75rem 0.75rem;
+  overflow: hidden;
+}
+
 /* Scrollbar polish */
 .main::-webkit-scrollbar {
   width: 8px;

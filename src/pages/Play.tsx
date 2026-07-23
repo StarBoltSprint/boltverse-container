@@ -1,16 +1,16 @@
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState } from "react";
 import { useContent } from "../content/ContentContext";
 import {
   buildGenericResult,
   loreQuiz,
   silentSeedStory,
-  stormOrbQuest,
   type PlayResult,
   type StoryNode,
 } from "../data/playContent";
 import { typeLabel } from "../data/mock";
 import { savePlayResult } from "../data/playSession";
+import { SprintMiniQuest3D } from "../sprint/SprintMiniQuest3D";
 
 export function Play() {
   const { id = "" } = useParams();
@@ -28,9 +28,16 @@ export function Play() {
     );
   }
 
-  // Dedicated samples
+  // Sprint Mini-Quest → Three.js 3D run
   if (exp.id === "feat-1" || exp.type === "sprint") {
-    return <StormOrbQuest experienceId={exp.id} title={exp.title} emoji={exp.emoji} type={exp.type} />;
+    return (
+      <SprintMiniQuest3D
+        experienceId={exp.id}
+        title={exp.title}
+        emoji={exp.emoji}
+        type={exp.type}
+      />
+    );
   }
   if (exp.id === "d-5" || (exp.type === "mini-quest" && exp.id !== "feat-1")) {
     return <LoreQuizQuest experienceId={exp.id} title={exp.title} emoji={exp.emoji} type={exp.type} />;
@@ -69,103 +76,6 @@ function PlayChrome({
 function finish(navigate: ReturnType<typeof useNavigate>, result: PlayResult) {
   savePlayResult(result);
   navigate(`/results/${result.experienceId}`, { replace: true, state: result });
-}
-
-/* ─── Mini-Quest: Storm Orbs ─── */
-
-function StormOrbQuest({
-  experienceId,
-  title,
-  emoji,
-  type,
-}: {
-  experienceId: string;
-  title: string;
-  emoji: string;
-  type: PlayResult["type"];
-}) {
-  const navigate = useNavigate();
-  const [orbs, setOrbs] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(stormOrbQuest.seconds);
-  const [started, setStarted] = useState(false);
-  const [burst, setBurst] = useState(0);
-
-  useEffect(() => {
-    if (!started || timeLeft <= 0) return;
-    const t = window.setInterval(() => setTimeLeft((s) => s - 1), 1000);
-    return () => clearInterval(t);
-  }, [started, timeLeft]);
-
-  const complete = useCallback(
-    (collected: number) => {
-      const ratio = collected / stormOrbQuest.targetOrbs;
-      const personal = Math.round(stormOrbQuest.baseResonance * Math.min(1.2, 0.4 + ratio));
-      const shared = Math.round(stormOrbQuest.sharedResonance * Math.min(1.15, 0.5 + ratio));
-      finish(navigate, {
-        experienceId,
-        title,
-        type,
-        emoji,
-        personalResonance: personal,
-        sharedResonance: shared,
-        coreDelta: `+0.00${2 + (collected % 4)}%`,
-        rewards: stormOrbQuest.rewards,
-        endingTitle: collected >= stormOrbQuest.targetOrbs ? "Lightning Dash cleared!" : "Sprint ended",
-        endingSummary:
-          collected >= stormOrbQuest.targetOrbs
-            ? `You gathered all ${stormOrbQuest.targetOrbs} storm orbs. The corridor crackles with Pack energy.`
-            : `You secured ${collected}/${stormOrbQuest.targetOrbs} orbs before the storm closed.`,
-      });
-    },
-    [emoji, experienceId, navigate, title, type]
-  );
-
-  useEffect(() => {
-    if (started && timeLeft <= 0) complete(orbs);
-  }, [started, timeLeft, orbs, complete]);
-
-  useEffect(() => {
-    if (orbs >= stormOrbQuest.targetOrbs) complete(orbs);
-  }, [orbs, complete]);
-
-  function collect() {
-    if (!started) setStarted(true);
-    if (orbs >= stormOrbQuest.targetOrbs || timeLeft <= 0) return;
-    setOrbs((o) => o + 1);
-    setBurst((b) => b + 1);
-  }
-
-  return (
-    <div className="page play-page">
-      <PlayChrome
-        title={title}
-        emoji={emoji}
-        liveResonance={orbs * 8}
-        onExit={() => navigate(-1)}
-      />
-      <div className="play-stage play-stage--storm">
-        <p className="play-hint">
-          {typeLabel("sprint")} sample · Tap the storm to collect orbs before time runs out.
-        </p>
-        <div className="play-stats">
-          <span>
-            Orbs <strong>{orbs}</strong> / {stormOrbQuest.targetOrbs}
-          </span>
-          <span>
-            Time <strong>{timeLeft}s</strong>
-          </span>
-        </div>
-        <div className="bar play-bar" aria-hidden>
-          <i style={{ width: `${(orbs / stormOrbQuest.targetOrbs) * 100}%` }} />
-        </div>
-        <button type="button" className="storm-hit" onClick={collect} key={burst}>
-          <span className="storm-hit-glow" />
-          <span className="storm-hit-label">{started ? "⚡ Collect orb" : "⚡ Start sprint"}</span>
-        </button>
-        <p className="play-foot">Each tap pulls a storm orb into your Resonance trail.</p>
-      </div>
-    </div>
-  );
 }
 
 /* ─── Mini-Quest: Lore Quiz ─── */
