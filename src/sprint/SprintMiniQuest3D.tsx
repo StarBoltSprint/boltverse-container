@@ -137,42 +137,49 @@ export function SprintMiniQuest3D({
       scene.add(stars);
     }
 
-    // Bolt runner (stylized white wolf body)
+    // Bolt runner — faces −Z (down the track, away from camera at +Z)
+    // Capsule default is along Y; rotate onto Z so body length follows the run.
     const bolt = new THREE.Group();
     const bodyMat = new THREE.MeshStandardMaterial({
       color: 0xf2f6ff,
       roughness: 0.45,
       metalness: 0.15,
     });
-    const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.45, 0.85, 6, 12), bodyMat);
-    body.rotation.z = Math.PI / 2;
-    body.position.y = 0.7;
+    const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.42, 0.9, 6, 12), bodyMat);
+    // Y-up capsule → length along Z (forward/back)
+    body.rotation.x = Math.PI / 2;
+    body.position.set(0, 0.65, 0);
     body.castShadow = true;
     bolt.add(body);
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.38, 16, 16), bodyMat);
-    head.position.set(0.55, 0.95, 0);
+    // Head toward −Z (into the corridor)
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.36, 16, 16), bodyMat);
+    head.position.set(0, 0.85, -0.7);
     bolt.add(head);
-    const earL = new THREE.Mesh(
-      new THREE.ConeGeometry(0.12, 0.32, 6),
-      bodyMat
-    );
-    earL.position.set(0.45, 1.35, 0.18);
-    earL.rotation.z = -0.3;
+    const earL = new THREE.Mesh(new THREE.ConeGeometry(0.11, 0.3, 6), bodyMat);
+    earL.position.set(0.16, 1.2, -0.75);
+    earL.rotation.x = -0.35;
     bolt.add(earL);
     const earR = earL.clone();
-    earR.position.z = -0.18;
+    earR.position.x = -0.16;
     bolt.add(earR);
-    // cyan trail
+    // Snout tip
+    const snout = new THREE.Mesh(
+      new THREE.SphereGeometry(0.16, 10, 10),
+      new THREE.MeshStandardMaterial({ color: 0xe8eef8, roughness: 0.5 })
+    );
+    snout.position.set(0, 0.72, -1.0);
+    bolt.add(snout);
+    // Cyan speed trail behind (+Z = toward camera)
     const trail = new THREE.Mesh(
-      new THREE.ConeGeometry(0.25, 1.4, 8),
+      new THREE.ConeGeometry(0.28, 1.5, 8),
       new THREE.MeshBasicMaterial({
         color: 0x22d3ee,
         transparent: true,
-        opacity: 0.45,
+        opacity: 0.5,
       })
     );
-    trail.rotation.z = Math.PI / 2;
-    trail.position.set(-0.9, 0.55, 0);
+    trail.rotation.x = -Math.PI / 2;
+    trail.position.set(0, 0.5, 0.95);
     bolt.add(trail);
     bolt.position.set(0, 0, 0);
     scene.add(bolt);
@@ -396,8 +403,8 @@ export function SprintMiniQuest3D({
       }
 
       bolt.position.set(boltX, boltY, 0);
-      bolt.rotation.y = 0;
-      bolt.rotation.z = -boltX * 0.04;
+      // Face down the track (−Z); bank slightly into strafe
+      bolt.rotation.set(0, 0, -boltX * 0.06);
       // run bob
       bolt.position.y += Math.sin(clock.elapsed * 14) * 0.04 * (grounded ? 1 : 0);
 
