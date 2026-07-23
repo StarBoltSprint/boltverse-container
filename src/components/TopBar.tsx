@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 import { useContent } from "../content/ContentContext";
 import { PERSONAL_RESONANCE, STAR_CORE_CHARGE } from "../data/mock";
 import { usePlatform } from "../platform/PlatformContext";
@@ -6,7 +8,20 @@ import { PLATFORMS } from "../platform/types";
 export function TopBar() {
   const { platform, resetPlatform, isMobile } = usePlatform();
   const { displayName } = useContent();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const meta = PLATFORMS.find((p) => p.id === platform);
+
+  function onSignOut() {
+    if (!window.confirm("Sign out of the Citadel on this device?")) return;
+    signOut();
+    navigate("/auth", { replace: true });
+  }
+
+  const label =
+    user?.method === "x" && user.xHandle
+      ? `@${user.xHandle}`
+      : displayName || user?.displayName || "Guardian";
 
   return (
     <header className="topbar">
@@ -43,8 +58,20 @@ export function TopBar() {
         >
           {meta?.icon ?? "⚙️"} <span className="platform-switch-label">Switch</span>
         </button>
-        <div className="avatar" title={displayName} aria-label={displayName}>
-          🐺
+        <button
+          type="button"
+          className="platform-switch-btn"
+          title="Sign out"
+          onClick={onSignOut}
+        >
+          ⎋ <span className="platform-switch-label">Out</span>
+        </button>
+        <div
+          className="avatar"
+          title={label}
+          aria-label={label}
+        >
+          {user?.avatarEmoji ?? "🐺"}
         </div>
       </div>
     </header>

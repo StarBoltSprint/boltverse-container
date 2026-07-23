@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
+import { AuthProvider, useAuth } from "./auth/AuthContext";
 import { Shell } from "./components/Shell";
 import { ContentProvider } from "./content/ContentContext";
 import { isOnboardingDone } from "./data/contentStore";
+import { Auth } from "./pages/Auth";
 import { Codex } from "./pages/Codex";
 import { Create } from "./pages/Create";
 import { Discover } from "./pages/Discover";
@@ -16,23 +18,33 @@ import { PlatformProvider, usePlatform } from "./platform/PlatformContext";
 
 function ChooseRoute() {
   const { platform } = usePlatform();
-  if (platform) {
-    if (!isOnboardingDone()) return <Navigate to="/onboarding" replace />;
-    return <Navigate to="/" replace />;
-  }
-  return <PlatformSelect />;
+  const { isLoggedIn } = useAuth();
+  if (!platform) return <PlatformSelect />;
+  if (!isLoggedIn) return <Navigate to="/auth" replace />;
+  if (!isOnboardingDone()) return <Navigate to="/onboarding" replace />;
+  return <Navigate to="/" replace />;
+}
+
+function AuthRoute() {
+  const { platform } = usePlatform();
+  if (!platform) return <Navigate to="/choose" replace />;
+  return <Auth />;
 }
 
 function OnboardingRoute() {
   const { platform } = usePlatform();
+  const { isLoggedIn } = useAuth();
   if (!platform) return <Navigate to="/choose" replace />;
+  if (!isLoggedIn) return <Navigate to="/auth" replace />;
   if (isOnboardingDone()) return <Navigate to="/" replace />;
   return <Onboarding />;
 }
 
 function RequireReady({ children }: { children: ReactNode }) {
   const { platform } = usePlatform();
+  const { isLoggedIn } = useAuth();
   if (!platform) return <Navigate to="/choose" replace />;
+  if (!isLoggedIn) return <Navigate to="/auth" replace />;
   if (!isOnboardingDone()) return <Navigate to="/onboarding" replace />;
   return <>{children}</>;
 }
@@ -41,6 +53,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/choose" element={<ChooseRoute />} />
+      <Route path="/auth" element={<AuthRoute />} />
       <Route path="/onboarding" element={<OnboardingRoute />} />
       <Route
         element={
@@ -63,17 +76,18 @@ function AppRoutes() {
 }
 
 /**
- * Flow: platform chooser → Citadel onboarding → shell.
- * HashRouter for static hosts / GitHub Pages.
+ * Flow: platform → auth (X or local name) → onboarding → shell.
  */
 export default function App() {
   return (
     <PlatformProvider>
-      <ContentProvider>
-        <HashRouter>
-          <AppRoutes />
-        </HashRouter>
-      </ContentProvider>
+      <AuthProvider>
+        <ContentProvider>
+          <HashRouter>
+            <AppRoutes />
+          </HashRouter>
+        </ContentProvider>
+      </AuthProvider>
     </PlatformProvider>
   );
 }

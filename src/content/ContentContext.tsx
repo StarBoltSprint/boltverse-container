@@ -2,10 +2,12 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
+import { useAuth } from "../auth/AuthContext";
 import type { Experience } from "../data/mock";
 import {
   type DraftExperience,
@@ -50,11 +52,19 @@ interface ContentContextValue {
 const ContentContext = createContext<ContentContextValue | null>(null);
 
 export function ContentProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [published, setPublished] = useState<Experience[]>(() => loadPublished());
   const [drafts, setDrafts] = useState<DraftExperience[]>(() => loadDrafts());
   const [displayName, setDisplayNameState] = useState(() => loadDisplayName());
   const [howlCount, setHowlCount] = useState(() => loadHowlCount());
   const [codexUnlocks, setCodexUnlocks] = useState<string[]>(() => loadCodexUnlocks());
+
+  useEffect(() => {
+    if (user?.displayName) {
+      saveDisplayName(user.displayName);
+      setDisplayNameState(user.displayName);
+    }
+  }, [user]);
 
   const discoverFeed = useMemo(() => getFullDiscoverFeed(published), [published]);
 

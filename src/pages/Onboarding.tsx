@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { usePlatform } from "../platform/PlatformContext";
-import { isOnboardingDone, setOnboardingDone } from "../data/contentStore";
+import { useAuth } from "../auth/AuthContext";
 import { useContent } from "../content/ContentContext";
+import { isOnboardingDone, setOnboardingDone } from "../data/contentStore";
+import { usePlatform } from "../platform/PlatformContext";
 
 const STEPS = [
   {
@@ -36,35 +37,30 @@ const STEPS = [
     body: "Forge your own experiences, publish them, and watch them appear in Discover. Powered by xAI & YOU — the Pack writes the mythos together.",
   },
   {
-    id: "name",
+    id: "ready",
     emoji: "🏰",
-    title: "Claim your Pack name",
-    body: "This name shows on creations you publish. You can feel free to change the vibe later.",
+    title: "You’re ready",
+    body: "Your Pack identity is set. Enter the Citadel and start sprinting.",
   },
 ] as const;
 
 export function Onboarding() {
   const { platform } = usePlatform();
+  const { user, isLoggedIn } = useAuth();
   const { setDisplayName, displayName } = useContent();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
-  const [name, setName] = useState(displayName === "Pack Guardian" ? "" : displayName);
 
-  if (!platform) {
-    return <Navigate to="/choose" replace />;
-  }
-
-  if (isOnboardingDone()) {
-    return <Navigate to="/" replace />;
-  }
+  if (!platform) return <Navigate to="/choose" replace />;
+  if (!isLoggedIn || !user) return <Navigate to="/auth" replace />;
+  if (isOnboardingDone()) return <Navigate to="/" replace />;
 
   const current = STEPS[step];
   const isLast = step === STEPS.length - 1;
-  const isName = current.id === "name";
 
   function next() {
     if (isLast) {
-      setDisplayName(name.trim() || "Pack Guardian");
+      setDisplayName(user!.displayName || displayName);
       setOnboardingDone();
       navigate("/", { replace: true });
       return;
@@ -74,7 +70,7 @@ export function Onboarding() {
 
   function back() {
     if (step === 0) {
-      navigate("/choose", { replace: true });
+      navigate("/auth", { replace: true });
       return;
     }
     setStep((s) => s - 1);
@@ -96,22 +92,25 @@ export function Onboarding() {
         <h1 className="platform-gate-title">{current.title}</h1>
         <p className="platform-gate-sub">{current.body}</p>
 
-        {isName && (
-          <label className="onboarding-name">
-            <span>Display name</span>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Thunder Pup"
-              maxLength={24}
-              autoFocus
-            />
-          </label>
+        {isLast && (
+          <div className="auth-identity-card">
+            <span className="auth-identity-avatar" aria-hidden>
+              {user.avatarEmoji}
+            </span>
+            <div>
+              <strong>{user.displayName}</strong>
+              <p>
+                {user.method === "x"
+                  ? `Connected as @${user.xHandle} on X`
+                  : "Local Pack account"}
+              </p>
+            </div>
+          </div>
         )}
 
         <div className="onboarding-actions">
           <button type="button" className="btn-ghost" onClick={back}>
-            {step === 0 ? "Platform" : "Back"}
+            {step === 0 ? "Account" : "Back"}
           </button>
           <button type="button" className="btn-play" onClick={next}>
             {isLast ? "Enter the Citadel" : "Continue"}

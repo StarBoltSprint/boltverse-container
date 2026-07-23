@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 import { useContent } from "../content/ContentContext";
 import { STAR_CORE_CHARGE } from "../data/mock";
 
@@ -18,6 +19,7 @@ const GOALS = [
 
 export function Pack() {
   const { displayName, howlCount, doHowl, published } = useContent();
+  const { user } = useAuth();
   const [howling, setHowling] = useState(false);
   const [lastHowl, setLastHowl] = useState<string | null>(null);
 
@@ -116,7 +118,13 @@ export function Pack() {
       <section className="panel" style={{ marginTop: "1.25rem" }}>
         <h2 className="panel-title">Pack notes</h2>
         <ul className="results-rewards">
-          <li>You are signed in as <strong>{displayName}</strong> (from onboarding).</li>
+          <li>
+            You are signed in as <strong>{displayName}</strong>
+            {user?.method === "x" && user.xHandle
+              ? ` (X @${user.xHandle})`
+              : " (local Pack name)"}
+            .
+          </li>
           <li>Published creations: {published.length}</li>
           <li>
             Live multiplayer Howls need the shared backend later — this tab is the full light Pack

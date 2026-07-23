@@ -1,14 +1,20 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 import { isOnboardingDone } from "../data/contentStore";
 import { usePlatform } from "../platform/PlatformContext";
 import { PLATFORMS, type Platform } from "../platform/types";
 
 export function PlatformSelect() {
   const { setPlatform } = usePlatform();
+  const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
   function choose(id: Platform) {
     setPlatform(id);
+    if (!isLoggedIn) {
+      navigate("/auth", { replace: true });
+      return;
+    }
     navigate(isOnboardingDone() ? "/" : "/onboarding", { replace: true });
   }
 
