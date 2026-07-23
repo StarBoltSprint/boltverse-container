@@ -13,16 +13,31 @@ export function ExperienceCard({ experience, featured }: Props) {
   return (
     <article className={`exp-card${featured ? " featured" : ""}`}>
       <div className="exp-thumb" aria-hidden>
-        {experience.emoji}
+        <span>{experience.emoji}</span>
       </div>
       <div className="exp-meta">
-        <h3>{experience.title}</h3>
-        <p>
-          {typeLabel(experience.type)} · {experience.durationMin} min ·{" "}
+        <div className="exp-meta-top">
+          <h3>{experience.title}</h3>
+          {!featured && (
+            <Link to={playTo} className="btn-play btn-play--sm">
+              Play
+            </Link>
+          )}
+        </div>
+        <p className="exp-line">
+          <span className="exp-type">{typeLabel(experience.type)}</span>
+          <span className="exp-dot">·</span>
+          {experience.durationMin} min
+          <span className="exp-dot">·</span>
           {experience.creator}
-          {!featured && ` · ${experience.playCount.toLocaleString()} plays`}
+          {!featured && (
+            <>
+              <span className="exp-dot">·</span>
+              {experience.playCount.toLocaleString()} plays
+            </>
+          )}
         </p>
-        {featured && <p style={{ marginTop: "0.35rem" }}>{experience.description}</p>}
+        {featured && <p className="exp-desc">{experience.description}</p>}
         <div className="exp-tags">
           {experience.tags.slice(0, featured ? 4 : 2).map((t) => (
             <span key={t} className="tag">
@@ -32,15 +47,10 @@ export function ExperienceCard({ experience, featured }: Props) {
         </div>
         {featured && (
           <Link to={playTo} className="btn-play">
-            Play
+            Play now
           </Link>
         )}
       </div>
-      {!featured && (
-        <Link to={playTo} className="btn-play">
-          Play
-        </Link>
-      )}
     </article>
   );
 }
